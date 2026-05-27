@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Hai Dang</title>
+<meta name="description" content="personal profile" />
+<meta property="og:title" content="Hai Dang" />
+<meta name="theme-color" content="#f4f1ea" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f4f1ea;
+    --bg-2:#faf8f3;
+    --ink:#33302a;
+    --soft:#726d63;
+    --faint:#aaa394;
+    --line:rgba(51,48,42,.10);
+    --line-2:rgba(51,48,42,.18);
+    --accent:#a9805a;
+    --accent-deep:#8a6442;
+    --accent-wash:rgba(169,128,90,.10);
+    --card:#fffefb;
+    --err:#c06a52;
+    --ok:#8a9a5b;
+    --shadow:0 22px 54px -30px rgba(80,62,42,.45);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;
+    min-height:100dvh;-webkit-font-smoothing:antialiased;
+  }
+
+  /* ambient + grain */
+  .amb{position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(55% 40% at 50% -5%,rgba(169,128,90,.12),transparent 60%),
+      radial-gradient(50% 40% at 92% 96%,rgba(169,128,90,.07),transparent 62%);}
+  .grain{position:fixed;inset:0;z-index:70;pointer-events:none;opacity:.45;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.36 0 0 0 .022 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  /* =============================================
+     LAYOUT
+     Mobile  (<768px)  : single column, normal scroll
+     Desktop (≥768px)  : two columns, left sticky
+  ============================================= */
+
+  /* Mobile default */
+  .wrap{
+    max-width:520px;
+    margin:0 auto;
+    padding:60px 22px calc(60px + env(safe-area-inset-bottom));
+  }
+  .col-profile,.col-form{width:100%}
+  .col-form{margin-top:48px}
+
+  /* Desktop two-column */
+  @media(min-width:768px){
+    body{overflow:hidden;height:100dvh}
+    .wrap{
+      max-width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      height:100dvh;
+      padding:0;
+      margin:0;
+    }
+    /* Left — sticky, vertically centered, no scroll */
+    .col-profile{
+      position:sticky;top:0;
+      height:100dvh;
+      display:flex;flex-direction:column;justify-content:center;
+      padding:48px clamp(32px,4vw,72px);
+      overflow:hidden;
+      border-right:1px solid var(--line);
+    }
+    /* Right — scrollable */
+    .col-form{
+      height:100dvh;
+      overflow-y:auto;
+      padding:60px clamp(28px,4vw,72px) 80px;
+      margin-top:0;
+      /* hide scrollbar but keep function */
+      scrollbar-width:none;
+    }
+    .col-form::-webkit-scrollbar{display:none}
+    /* subtle column divider gradient overlay on right */
+    .col-profile::after{
+      content:"";position:absolute;right:0;top:0;bottom:0;width:1px;
+      background:linear-gradient(transparent,var(--line-2) 30%,var(--line-2) 70%,transparent);
+    }
+  }
+
+  /* Large desktop: cap total width, center the grid */
+  @media(min-width:1280px){
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      height:100dvh;
+    }
+    body{display:flex;justify-content:center}
+    /* re-add side borders for centered look */
+    .wrap{
+      border-left:1px solid var(--line);
+      border-right:1px solid var(--line);
+    }
+  }
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(18px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ===== HERO ===== */
+  .hero{text-align:center}
+  .avatar-wrap{position:relative;width:128px;height:128px;margin:0 auto 20px}
+  .avatar-wrap::before{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--accent);opacity:.35}
+  .avatar{width:128px;height:128px;border-radius:50%;object-fit:cover;position:relative;z-index:1;
+    border:3px solid var(--card);background:#e7e2d6;display:block;box-shadow:var(--shadow)}
+  .name{font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+
+  /* ===== quote ===== */
+  .quote{margin:26px 0;text-align:center;padding:0 4px}
+  .quote::before{content:"";display:block;width:22px;height:1px;background:var(--accent);margin:0 auto 18px;opacity:.6}
+  .quote p{font-size:clamp(13px,1.5vw,15px);line-height:1.75;color:var(--soft);font-style:italic;font-weight:300;letter-spacing:.01em}
+  .quote::after{content:"";display:block;width:22px;height:1px;background:var(--accent);margin:18px auto 0;opacity:.6}
+
+  /* ===== social ===== */
+  .social{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .sb{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:13px 16px;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,border-color .35s}
+  .sb:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:var(--shadow)}
+  .sb:active{transform:scale(.985)}
+  .sb .ic{width:36px;height:36px;flex:none;border-radius:10px;background:var(--accent-wash);
+    display:grid;place-items:center;transition:background .35s}
+  .sb:hover .ic{background:rgba(169,128,90,.18)}
+  .sb .ic svg{width:17px;height:17px;fill:var(--accent-deep)}
+  .sb .l{flex:1;display:flex;flex-direction:column;gap:1px}
+  .sb .l b{font-size:13.5px;font-weight:600}
+  .sb .l span{font-size:11px;color:var(--faint);letter-spacing:.02em}
+  .sb .arr{font-size:12px;color:var(--faint);transition:transform .35s,color .35s;margin-left:auto}
+  .sb:hover .arr{color:var(--accent-deep);transform:translateX(3px)}
+
+  /* ===== music player ===== */
+  .player{display:flex;align-items:center;gap:13px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 15px}
+  .pbtn{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line-2);background:var(--bg);
+    color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:.3s}
+  .pbtn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-wash)}
+  .pbtn svg{width:14px;height:14px}
+  .pbtn .ic-pause{display:none}
+  .player.playing .pbtn .ic-play{display:none}
+  .player.playing .pbtn .ic-pause{display:block}
+  .pinfo{flex:1;min-width:0}
+  .pinfo .pl{font-size:10px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+  .pinfo .pt{font-size:13px;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .pprog{height:2px;background:var(--line);border-radius:99px;margin-top:8px;overflow:hidden;cursor:pointer}
+  .pprog i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .1s linear}
+  .bars{display:inline-flex;gap:2px;align-items:flex-end;height:10px}
+  .bars span{width:2px;background:var(--accent);border-radius:2px;height:3px}
+  .player.playing .bars span{animation:eq .9s ease-in-out infinite}
+  .player.playing .bars span:nth-child(2){animation-delay:.2s}
+  .player.playing .bars span:nth-child(3){animation-delay:.4s}
+  .player.playing .bars span:nth-child(4){animation-delay:.15s}
+  @keyframes eq{0%,100%{height:3px}50%{height:10px}}
+
+  /* ===== FORM section ===== */
+  .form-title{text-align:center;font-size:11px;color:var(--soft);letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px}
+  .form-title::before,.form-title::after{content:"·";color:var(--accent);margin:0 10px}
+  .form-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 22px 24px;box-shadow:var(--shadow)}
+
+  /* vertically center form on desktop if content is short */
+  @media(min-width:768px){
+    .col-form-inner{min-height:calc(100dvh - 140px);display:flex;flex-direction:column;justify-content:center}
+  }
+
+  .field{margin-bottom:14px}
+  .field label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--soft);margin-bottom:7px;letter-spacing:.03em}
+  .field label .opt{color:var(--faint)}
+  .field label .req{color:var(--accent-deep)}
+  .input,.textarea{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;
+    color:var(--ink);font:inherit;font-size:14.5px;padding:12px 14px;transition:.3s;outline:none;resize:none}
+  .input::placeholder,.textarea::placeholder{color:var(--faint)}
+  .input:focus,.textarea:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px var(--accent-wash)}
+  .textarea{min-height:95px;line-height:1.55}
+  .field.invalid .input,.field.invalid .textarea{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,106,82,.1)}
+  .hint{font-size:11px;color:var(--err);margin-top:5px;display:none}
+  .field.invalid .hint{display:block}
+
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  @media(max-width:420px){.row-2{grid-template-columns:1fr}}
+
+  .drop{border:1.5px dashed var(--line-2);border-radius:13px;padding:18px 14px;text-align:center;cursor:pointer;
+    transition:.35s;background:var(--bg-2);position:relative}
+  .drop:hover,.drop.drag{border-color:var(--accent);background:var(--accent-wash)}
+  .drop .di{font-size:20px;color:var(--accent-deep);line-height:1}
+  .drop p{font-size:13px;color:var(--ink);margin-top:5px}
+  .drop small{font-size:11px;color:var(--faint);display:block;margin-top:3px;letter-spacing:.04em}
+  .drop input[type=file]{display:none}
+
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px;gap:10px;flex-wrap:wrap;
+    font-size:11px;color:var(--faint);letter-spacing:.02em}
+  .meta-row b{color:var(--ink);font-weight:600}
+  .meta-row .over{color:var(--err)}
+  .bar{height:2px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:7px}
+  .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .4s,background .3s}
+  .bar i.over{background:var(--err)}
+
+  .previews{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}
+  @media(max-width:380px){.previews{grid-template-columns:repeat(3,1fr)}}
+  .prev{position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:#e7e2d6;
+    animation:fadeIn .35s ease}
+  @keyframes fadeIn{from{opacity:0;transform:scale(.87)}to{opacity:1;transform:none}}
+  .prev img{width:100%;height:100%;object-fit:cover}
+  .prev .rm{position:absolute;top:4px;right:4px;width:19px;height:19px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(51,48,42,.75);color:#fff;font-size:10px;display:grid;place-items:center;transition:.25s}
+  .prev .rm:hover{background:var(--err)}
+  .prev .sz{position:absolute;bottom:0;left:0;right:0;font-size:8px;text-align:center;padding:2px;
+    background:linear-gradient(transparent,rgba(51,48,42,.82));color:#fff}
+
+  .send{width:100%;margin-top:16px;padding:13px;border:none;border-radius:13px;cursor:pointer;
+    font:inherit;font-size:14.5px;font-weight:600;color:#fffefb;letter-spacing:.04em;position:relative;overflow:hidden;
+    background:var(--accent);transition:.35s}
+  .send:hover:not(:disabled){background:var(--accent-deep);transform:translateY(-2px);box-shadow:0 14px 28px -14px rgba(138,100,66,.5)}
+  .send:active:not(:disabled){transform:translateY(0)}
+  .send:disabled{cursor:not-allowed;opacity:.55}
+  .send .lbl{display:inline-flex;align-items:center;gap:10px;justify-content:center}
+  .spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,254,251,.4);border-top-color:#fffefb;
+    animation:rot .7s linear infinite;display:none}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .send.loading .spinner{display:inline-block}
+
+  .sent{display:none;text-align:center;padding:32px 14px;animation:fadeIn .5s ease}
+  .sent.show{display:block}
+  .sent .ck{font-size:36px;color:var(--accent-deep);line-height:1}
+  .sent h3{font-size:18px;font-weight:600;margin-top:10px}
+  .sent p{font-size:12.5px;color:var(--soft);margin-top:6px}
+  .sent button{margin-top:16px;background:transparent;border:1px solid var(--line-2);color:var(--ink);
+    padding:10px 20px;border-radius:11px;cursor:pointer;font:inherit;font-size:13px;transition:.3s}
+  .sent button:hover{border-color:var(--accent);color:var(--accent-deep)}
+
+  /* toasts */
+  .toasts{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:120;display:flex;flex-direction:column;gap:10px;
+    width:min(380px,calc(100% - 28px));padding-bottom:env(safe-area-inset-bottom)}
+  .toast{display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:13px;
+    background:var(--card);border:1px solid var(--line-2);box-shadow:0 24px 50px -22px rgba(80,62,42,.5);
+    transform:translateY(150%);opacity:0;transition:.5s cubic-bezier(.2,.8,.2,1)}
+  .toast.show{transform:none;opacity:1}
+  .toast .tic{width:28px;height:28px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:14px}
+  .toast.ok .tic{background:var(--accent-wash);color:var(--accent-deep)}
+  .toast.err .tic{background:rgba(192,106,82,.14);color:var(--err)}
+  .toast .tx strong{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .toast .tx span{font-size:11.5px;color:var(--soft)}
+
+  /* footer — only shows on mobile (desktop right col scrolls past it) */
+  footer{margin-top:36px;text-align:center;padding-bottom:env(safe-area-inset-bottom)}
+  footer .d{width:22px;height:1px;background:var(--line-2);margin:0 auto 12px}
+  footer .sig{font-size:10.5px;color:var(--faint);letter-spacing:.18em}
+</style>
+</head>
+<body>
+
+<div class="amb"></div>
+<div class="grain"></div>
+
+<main class="wrap">
+
+  <!-- ===== LEFT: PROFILE ===== -->
+  <div class="col-profile">
+
+    <header class="hero rv">
+      <div class="avatar-wrap">
+        <img class="avatar" alt="Hai Dang" src="avatar.png"
+          onerror="this.onerror=null;this.src=&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='236' height='236'%3E%3Crect width='236' height='236' fill='%23e7e2d6'/%3E%3Ccircle cx='118' cy='96' r='40' fill='%23a9805a'/%3E%3Cpath d='M44 216c0-40 33-62 74-62s74 22 74 62z' fill='%23a9805a'/%3E%3C/svg%3E&quot;" />
+      </div>
+      <h1 class="name">Hai Dang</h1>
+    </header>
+
+    <section class="quote rv">
+      <p>"Ba ngàn con sông chỉ uống một gáo nước<br>Thiên hạ vạn người chỉ muốn nắm tay em."</p>
+    </section>
+
+    <section class="social rv">
+      <!-- Facebook -->
+      <a class="sb" href="https://facebook.com/danghaipham" target="_blank" rel="noopener">
+        <span class="ic">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+          </svg>
+        </span>
+        <span class="l"><b>Facebook</b><span>/danghaipham</span></span>
+        <span class="arr">→</span>
+      </a>
+
+      <!-- Instagram -->
+      <a class="sb" href="https://instagram.com/_danghaiI_" target="_blank" rel="noopener">
+        <span class="ic">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+          </svg>
+        </span>
+        <span class="l"><b>Instagram</b><span>@_danghaiI_</span></span>
+        <span class="arr">→</span>
+      </a>
+
+      <!-- Music player -->
+      <div class="player" id="player">
+        <button class="pbtn" id="pbtn" aria-label="play">
+          <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="ic-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="pinfo">
+          <div class="pl"><span class="bars"><span></span><span></span><span></span><span></span></span> đang nghe</div>
+          <div class="pt" id="ptitle">— chạm để phát —</div>
+          <div class="pprog" id="pprog"><i id="pfill"></i></div>
+        </div>
+        <audio id="audio" preload="none"></audio>
+      </div>
+    </section>
+
+  </div><!-- /col-profile -->
+
+  <!-- ===== RIGHT: FORM ===== -->
+  <div class="col-form">
+    <div class="col-form-inner">
+
+      <section class="form-sec rv">
+        <div class="form-title">nhắn mình</div>
+        <div class="form-card">
+          <div id="formInner">
+            <div class="row-2">
+              <div class="field">
+                <label>Tên <span class="opt">(tuỳ chọn)</span></label>
+                <input class="input" id="name" type="text" placeholder="bạn là ai nhỉ…" autocomplete="name" />
+              </div>
+              <div class="field">
+                <label>Email <span class="opt">(tuỳ chọn)</span></label>
+                <input class="input" id="email" type="email" placeholder="để mình rep lại" autocomplete="email" />
+              </div>
+            </div>
+
+            <div class="field" id="msgField">
+              <label>Lời nhắn <span class="req">*</span></label>
+              <textarea class="textarea" id="message" placeholder="viết gì đó đi…"></textarea>
+              <div class="hint">cần viết lời nhắn trước khi gửi</div>
+            </div>
+
+            <div class="field" style="margin-bottom:6px">
+              <label>Ảnh đính kèm <span class="opt">(tuỳ chọn)</span></label>
+              <div class="drop" id="drop">
+                <div class="di">+</div>
+                <p>Kéo thả hoặc chạm để chọn ảnh</p>
+                <small>TỐI ĐA 25 MB</small>
+                <input type="file" id="fileInput" accept="image/*" multiple />
+              </div>
+              <div class="meta-row">
+                <span><b id="count">0</b> ảnh</span>
+                <span id="sizePill"><b id="size">0 B</b> / 25 MB</span>
+              </div>
+              <div class="bar"><i id="barFill"></i></div>
+              <div class="previews" id="previews"></div>
+            </div>
+
+            <button class="send" id="sendBtn">
+              <span class="lbl"><span class="spinner"></span><span class="txt-send">Gửi lời nhắn</span></span>
+            </button>
+          </div>
+
+          <div class="sent" id="sentState">
+            <div class="ck">✓</div>
+            <h3>Đã gửi rồi nha</h3>
+            <p>cảm ơn đã ghé qua — mình sẽ rep sớm</p>
+            <button id="resetBtn">Gửi tin khác</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="rv">
+        <div class="d"></div>
+        <div class="sig">© 2026 · HAI DANG</div>
+      </footer>
+
+    </div>
+  </div><!-- /col-form -->
+
+</main>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* reveal */
+(function(){
+  const io=new IntersectionObserver(es=>es.forEach(en=>{
+    if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}
+  }),{threshold:.06});
+  document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i*.1)+'s';io.observe(el);});
+})();
+
+/* ===== MUSIC PLAYER ===== */
+const CANDIDATES=['50 năm về sau.mp3','music.mp3','audio.mp3','bgm.mp3','track.mp3'];
+const audio=document.getElementById('audio'),player=document.getElementById('player');
+const pbtn=document.getElementById('pbtn'),ptitle=document.getElementById('ptitle');
+const pprog=document.getElementById('pprog'),pfill=document.getElementById('pfill');
+let resolved=null;
+function prettyName(s){try{return decodeURIComponent(s.split('/').pop()).replace(/\.mp3$/i,'');}catch(e){return 'nhạc nền';}}
+function tryCandidate(i){
+  if(i>=CANDIDATES.length){ptitle.textContent='— chưa tìm thấy file .mp3 —';return;}
+  const t=new Audio();t.preload='metadata';
+  t.addEventListener('loadedmetadata',()=>{resolved=CANDIDATES[i];audio.src=resolved;ptitle.textContent=prettyName(resolved);},{once:true});
+  t.addEventListener('error',()=>tryCandidate(i+1),{once:true});
+  t.src=CANDIDATES[i];
+}
+tryCandidate(0);
+pbtn.addEventListener('click',()=>{
+  if(!resolved){ptitle.textContent='— đặt file .mp3 cạnh trang này —';return;}
+  if(audio.paused){audio.play().then(()=>player.classList.add('playing')).catch(()=>{ptitle.textContent='— không phát được —';});}
+  else{audio.pause();player.classList.remove('playing');}
+});
+audio.addEventListener('timeupdate',()=>{if(audio.duration)pfill.style.width=(audio.currentTime/audio.duration*100)+'%';});
+audio.addEventListener('ended',()=>{player.classList.remove('playing');pfill.style.width='0%';});
+pprog.addEventListener('click',e=>{if(!audio.duration)return;const r=pprog.getBoundingClientRect();audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;});
+
+/* ===== FORM ===== */
+const MAX=25*1024*1024;
+let files=[];
+const fileInput=document.getElementById('fileInput'),drop=document.getElementById('drop'),previews=document.getElementById('previews');
+const countEl=document.getElementById('count'),sizeEl=document.getElementById('size'),sizePill=document.getElementById('sizePill'),barFill=document.getElementById('barFill');
+const sendBtn=document.getElementById('sendBtn'),msgField=document.getElementById('msgField'),messageEl=document.getElementById('message');
+
+function fmt(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB';}
+function total(){return files.reduce((s,f)=>s+f.file.size,0);}
+function addFiles(list){
+  [...list].forEach(file=>{
+    if(!file.type.startsWith('image/'))return;
+    if(files.some(f=>f.file.name===file.name&&f.file.size===file.size))return;
+    files.push({file,url:URL.createObjectURL(file)});
+  });render();
+}
+function removeFile(i){URL.revokeObjectURL(files[i].url);files.splice(i,1);render();}
+function render(){
+  previews.innerHTML='';
+  files.forEach((f,i)=>{
+    const d=document.createElement('div');d.className='prev';
+    d.innerHTML=`<img src="${f.url}" alt=""/><button class="rm" data-i="${i}">✕</button><span class="sz">${fmt(f.file.size)}</span>`;
+    previews.appendChild(d);
+  });
+  previews.querySelectorAll('.rm').forEach(b=>b.onclick=()=>removeFile(+b.dataset.i));
+  const t=total();countEl.textContent=files.length;sizeEl.textContent=fmt(t);
+  const pct=Math.min(100,(t/MAX)*100);barFill.style.width=pct+'%';
+  const over=t>MAX;barFill.classList.toggle('over',over);sizePill.classList.toggle('over',over);
+}
+fileInput.addEventListener('change',e=>{addFiles(e.target.files);fileInput.value='';});
+drop.addEventListener('click',()=>fileInput.click());
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer.files)addFiles(e.dataTransfer.files);});
+
+function toast(type,title,sub){
+  const wrap=document.getElementById('toasts'),t=document.createElement('div');t.className='toast '+type;
+  t.innerHTML=`<span class="tic">${type==='ok'?'✓':'!'}</span><div class="tx"><strong>${title}</strong><span>${sub}</span></div>`;
+  wrap.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),560);},4200);
+}
+function setLoading(on){sendBtn.classList.toggle('loading',on);sendBtn.disabled=on;sendBtn.querySelector('.txt-send').textContent=on?'Đang gửi…':'Gửi lời nhắn';}
+messageEl.addEventListener('input',()=>{if(messageEl.value.trim())msgField.classList.remove('invalid');});
+
+sendBtn.addEventListener('click',async()=>{
+  const name=document.getElementById('name').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const message=messageEl.value.trim();
+  if(!message){msgField.classList.add('invalid');messageEl.focus();toast('err','Thiếu lời nhắn','Viết gì đó trước khi gửi nhé.');return;}
+  if(total()>MAX){toast('err','Ảnh quá lớn','Tổng ảnh phải ≤ 25 MB.');return;}
+  setLoading(true);
+  try{
+    const formData=new FormData();
+    formData.append('senderName',name);
+    formData.append('senderEmail',email);
+    formData.append('message',message);
+    files.forEach(f=>formData.append('images',f.file));
+    const res=await fetch('http://localhost:8888/sendEmail',{method:'POST',body:formData});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    toast('ok','Gửi thành công','Cảm ơn đã ghé qua.');
+    document.getElementById('formInner').style.display='none';
+    document.getElementById('sentState').classList.add('show');
+    files.forEach(f=>URL.revokeObjectURL(f.url));files=[];render();
+  }catch(err){
+    toast('err','Gửi thất bại',(err&&err.message)?err.message:'Không kết nối được server.');
+  }finally{setLoading(false);}
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  document.getElementById('sentState').classList.remove('show');
+  document.getElementById('formInner').style.display='';
+  document.getElementById('name').value='';document.getElementById('email').value='';
+  messageEl.value='';msgField.classList.remove('invalid');
+});
+</script>
+</body>
+</html>
