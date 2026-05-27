@@ -15,8 +15,8 @@
     --bg:#f4f1ea;
     --bg-2:#faf8f3;
     --ink:#33302a;
-    --soft:#726d63;
-    --faint:#aaa394;
+    --soft:#5a564e;
+    --faint:#8b8273;
     --line:rgba(51,48,42,.10);
     --line-2:rgba(51,48,42,.18);
     --accent:#a9805a;
@@ -24,207 +24,206 @@
     --accent-wash:rgba(169,128,90,.10);
     --card:#fffefb;
     --err:#c06a52;
-    --ok:#8a9a5b;
-    --shadow:0 22px 54px -30px rgba(80,62,42,.45);
-    --radius:18px;
+    --shadow:0 30px 70px -32px rgba(80,62,42,.45);
+    --shadow-sm:0 14px 34px -18px rgba(80,62,42,.30);
+    --radius:14px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
   body{
     font-family:'Plus Jakarta Sans',system-ui,sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;
+    background:var(--bg);color:var(--ink);line-height:1.6;
     min-height:100dvh;-webkit-font-smoothing:antialiased;
+    display:flex;align-items:center;justify-content:center;
+    padding:30px 18px;
   }
 
   /* ambient + grain */
   .amb{position:fixed;inset:0;z-index:-2;pointer-events:none;
     background:
-      radial-gradient(55% 40% at 50% -5%,rgba(169,128,90,.12),transparent 60%),
-      radial-gradient(50% 40% at 92% 96%,rgba(169,128,90,.07),transparent 62%);}
+      radial-gradient(55% 40% at 50% -5%,rgba(169,128,90,.14),transparent 60%),
+      radial-gradient(50% 40% at 92% 96%,rgba(169,128,90,.08),transparent 62%);}
   .grain{position:fixed;inset:0;z-index:70;pointer-events:none;opacity:.45;mix-blend-mode:multiply;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.45 0 0 0 0 0.36 0 0 0 .022 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-  /* =============================================
-     LAYOUT
-     Mobile  (<768px)  : single column, normal scroll
-     Desktop (≥768px)  : two columns, left sticky
-  ============================================= */
-
-  /* Mobile default */
-  .wrap{
-    max-width:520px;
-    margin:0 auto;
-    padding:60px 22px calc(60px + env(safe-area-inset-bottom));
+  /* ===== MAIN CARD ===== */
+  .card{
+    width:100%;
+    max-width:560px;       /* mobile default */
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+    opacity:0;transform:translateY(20px);animation:rise .8s cubic-bezier(.2,.7,.2,1) .1s forwards;
   }
-  .col-profile,.col-form{width:100%}
-  .col-form{margin-top:48px}
+  @keyframes rise{to{opacity:1;transform:none}}
 
-  /* Desktop two-column */
-  @media(min-width:768px){
-    body{overflow:hidden;height:100dvh}
-    .wrap{
-      max-width:100%;
+  /* top accent strip */
+  .card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,transparent,var(--accent) 20%,var(--accent-deep) 50%,var(--accent) 80%,transparent);
+    opacity:.8;z-index:2;
+  }
+
+  /* ============================
+     DESKTOP — HORIZONTAL LAYOUT
+  ============================ */
+  @media(min-width:880px){
+    .card{
+      max-width:1000px;
       display:grid;
-      grid-template-columns:1fr 1fr;
-      height:100dvh;
-      padding:0;
-      margin:0;
+      grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);
+      grid-template-areas:
+        "hero body"
+        "foot foot";
     }
-    /* Left — sticky, vertically centered, no scroll */
-    .col-profile{
-      position:sticky;top:0;
-      height:100dvh;
-      display:flex;flex-direction:column;justify-content:center;
-      padding:48px clamp(32px,4vw,72px);
-      overflow:hidden;
+    .hero{
+      grid-area:hero;
+      border-bottom:none;
       border-right:1px solid var(--line);
+      display:flex;flex-direction:column;justify-content:center;
+      padding:48px 38px;
+      position:relative;
     }
-    /* Right — scrollable */
-    .col-form{
-      height:100dvh;
-      overflow-y:auto;
-      padding:60px clamp(28px,4vw,72px) 80px;
-      margin-top:0;
-      /* hide scrollbar but keep function */
-      scrollbar-width:none;
-    }
-    .col-form::-webkit-scrollbar{display:none}
-    /* subtle column divider gradient overlay on right */
-    .col-profile::after{
-      content:"";position:absolute;right:0;top:0;bottom:0;width:1px;
+    /* soft gradient overlay on the divider */
+    .hero::after{
+      content:"";position:absolute;right:-1px;top:12%;bottom:12%;width:1px;
       background:linear-gradient(transparent,var(--line-2) 30%,var(--line-2) 70%,transparent);
     }
-  }
+    .body{grid-area:body;padding:42px 38px 36px;display:flex;flex-direction:column;justify-content:center}
+    .foot{grid-area:foot}
 
-  /* Large desktop: cap total width, center the grid */
-  @media(min-width:1280px){
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      height:100dvh;
-    }
-    body{display:flex;justify-content:center}
-    /* re-add side borders for centered look */
-    .wrap{
-      border-left:1px solid var(--line);
-      border-right:1px solid var(--line);
-    }
+    /* divider line "nhắn mình" only shown on mobile */
+    .body .div{display:none}
   }
-
-  /* reveal */
-  .rv{opacity:0;transform:translateY(18px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
-  .rv.in{opacity:1;transform:none}
+  @media(max-width:879px){
+    /* mobile: hide desktop heading */
+    .form-heading{display:none}
+  }
 
   /* ===== HERO ===== */
-  .hero{text-align:center}
-  .avatar-wrap{position:relative;width:128px;height:128px;margin:0 auto 20px}
-  .avatar-wrap::before{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--accent);opacity:.35}
-  .avatar{width:128px;height:128px;border-radius:50%;object-fit:cover;position:relative;z-index:1;
-    border:3px solid var(--card);background:#e7e2d6;display:block;box-shadow:var(--shadow)}
-  .name{font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+  .hero{
+    padding:40px 28px 24px;
+    text-align:center;
+    background:linear-gradient(180deg,var(--bg-2) 0%,transparent 100%);
+    border-bottom:1px solid var(--line);
+  }
+  .avatar-wrap{position:relative;width:104px;height:104px;margin:0 auto 16px}
+  .avatar-wrap::before{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--accent);opacity:.4}
+  .avatar{width:104px;height:104px;border-radius:50%;object-fit:cover;position:relative;z-index:1;
+    border:3px solid var(--card);background:#e7e2d6;display:block;box-shadow:var(--shadow-sm)}
+  .name{font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
 
-  /* ===== quote ===== */
-  .quote{margin:26px 0;text-align:center;padding:0 4px}
-  .quote::before{content:"";display:block;width:22px;height:1px;background:var(--accent);margin:0 auto 18px;opacity:.6}
-  .quote p{font-size:clamp(13px,1.5vw,15px);line-height:1.75;color:var(--soft);font-style:italic;font-weight:300;letter-spacing:.01em}
-  .quote::after{content:"";display:block;width:22px;height:1px;background:var(--accent);margin:18px auto 0;opacity:.6}
+  @media(min-width:880px){
+    .avatar-wrap{width:124px;height:124px;margin-bottom:20px}
+    .avatar{width:124px;height:124px}
+    .name{font-size:28px}
+  }
 
-  /* ===== social ===== */
-  .social{display:flex;flex-direction:column;gap:9px;margin-top:6px}
-  .sb{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--ink);
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:13px 16px;
-    transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,border-color .35s}
-  .sb:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:var(--shadow)}
-  .sb:active{transform:scale(.985)}
-  .sb .ic{width:36px;height:36px;flex:none;border-radius:10px;background:var(--accent-wash);
-    display:grid;place-items:center;transition:background .35s}
-  .sb:hover .ic{background:rgba(169,128,90,.18)}
-  .sb .ic svg{width:17px;height:17px;fill:var(--accent-deep)}
-  .sb .l{flex:1;display:flex;flex-direction:column;gap:1px}
-  .sb .l b{font-size:13.5px;font-weight:600}
-  .sb .l span{font-size:11px;color:var(--faint);letter-spacing:.02em}
-  .sb .arr{font-size:12px;color:var(--faint);transition:transform .35s,color .35s;margin-left:auto}
-  .sb:hover .arr{color:var(--accent-deep);transform:translateX(3px)}
+  .quote{margin-top:18px;padding:0 8px}
+  .quote::before{content:"";display:block;width:18px;height:1px;background:var(--accent);margin:0 auto 12px;opacity:.6}
+  .quote p{font-size:13px;line-height:1.7;color:var(--soft);font-style:italic;font-weight:300;letter-spacing:.01em}
+  .quote::after{content:"";display:block;width:18px;height:1px;background:var(--accent);margin:12px auto 0;opacity:.6}
 
-  /* ===== music player ===== */
-  .player{display:flex;align-items:center;gap:13px;
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 15px}
-  .pbtn{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line-2);background:var(--bg);
+  /* social row inside hero */
+  .social-row{display:flex;gap:10px;margin-top:22px;justify-content:center}
+  .sb{display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:50%;width:44px;height:44px;
+    transition:transform .3s,border-color .3s,background .3s,color .3s;position:relative}
+  .sb:hover{transform:translateY(-3px);border-color:var(--accent);background:var(--accent-wash)}
+  .sb svg{width:17px;height:17px;fill:var(--accent-deep);transition:fill .3s}
+  .sb:hover svg{fill:var(--accent-deep)}
+  /* tooltip */
+  .sb::after{content:attr(data-label);position:absolute;bottom:-26px;left:50%;transform:translateX(-50%) translateY(-4px);
+    background:var(--ink);color:var(--card);font-size:10px;letter-spacing:.05em;padding:3px 8px;border-radius:5px;
+    white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;font-weight:500}
+  .sb:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* music player */
+  .player{display:flex;align-items:center;gap:11px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 13px;margin-top:10px}
+  .pbtn{width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--line-2);background:var(--bg-2);
     color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:.3s}
   .pbtn:hover{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-wash)}
-  .pbtn svg{width:14px;height:14px}
+  .pbtn svg{width:12px;height:12px}
   .pbtn .ic-pause{display:none}
   .player.playing .pbtn .ic-play{display:none}
   .player.playing .pbtn .ic-pause{display:block}
-  .pinfo{flex:1;min-width:0}
-  .pinfo .pl{font-size:10px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
-  .pinfo .pt{font-size:13px;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
-  .pprog{height:2px;background:var(--line);border-radius:99px;margin-top:8px;overflow:hidden;cursor:pointer}
+  .pinfo{flex:1;min-width:0;text-align:left}
+  .pinfo .pl{font-size:9px;color:var(--faint);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+  .pinfo .pt{font-size:12px;font-weight:500;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .pprog{height:2px;background:var(--line);border-radius:99px;margin-top:6px;overflow:hidden;cursor:pointer}
   .pprog i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .1s linear}
-  .bars{display:inline-flex;gap:2px;align-items:flex-end;height:10px}
+  .bars{display:inline-flex;gap:2px;align-items:flex-end;height:9px}
   .bars span{width:2px;background:var(--accent);border-radius:2px;height:3px}
   .player.playing .bars span{animation:eq .9s ease-in-out infinite}
   .player.playing .bars span:nth-child(2){animation-delay:.2s}
   .player.playing .bars span:nth-child(3){animation-delay:.4s}
   .player.playing .bars span:nth-child(4){animation-delay:.15s}
-  @keyframes eq{0%,100%{height:3px}50%{height:10px}}
+  @keyframes eq{0%,100%{height:3px}50%{height:9px}}
 
-  /* ===== FORM section ===== */
-  .form-title{text-align:center;font-size:11px;color:var(--soft);letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px}
-  .form-title::before,.form-title::after{content:"·";color:var(--accent);margin:0 10px}
-  .form-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 22px 24px;box-shadow:var(--shadow)}
+  /* ===== BODY (form area) ===== */
+  .body{padding:24px 28px 28px}
 
-  /* vertically center form on desktop if content is short */
-  @media(min-width:768px){
-    .col-form-inner{min-height:calc(100dvh - 140px);display:flex;flex-direction:column;justify-content:center}
-  }
+  /* mobile divider above form */
+  .div{display:flex;align-items:center;gap:12px;margin:0 0 18px;color:var(--faint)}
+  .div::before,.div::after{content:"";flex:1;height:1px;background:var(--line)}
+  .div span{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--soft)}
 
-  .field{margin-bottom:14px}
-  .field label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--soft);margin-bottom:7px;letter-spacing:.03em}
+  /* desktop form heading */
+  .form-heading{font-size:11px;color:var(--soft);letter-spacing:.22em;text-transform:uppercase;
+    margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--line);position:relative}
+  .form-heading::after{content:"";position:absolute;left:0;bottom:-1px;width:32px;height:1px;background:var(--accent)}
+
+  /* ===== FORM ===== */
+  .field{margin-bottom:13px}
+  .field label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--soft);margin-bottom:6px;letter-spacing:.03em}
   .field label .opt{color:var(--faint)}
   .field label .req{color:var(--accent-deep)}
-  .input,.textarea{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;
-    color:var(--ink);font:inherit;font-size:14.5px;padding:12px 14px;transition:.3s;outline:none;resize:none}
+  .input,.textarea{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:11px;
+    color:var(--ink);font:inherit;font-size:14px;padding:11px 13px;transition:.3s;outline:none;resize:none}
   .input::placeholder,.textarea::placeholder{color:var(--faint)}
   .input:focus,.textarea:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px var(--accent-wash)}
-  .textarea{min-height:95px;line-height:1.55}
+  .textarea{min-height:90px;line-height:1.55}
   .field.invalid .input,.field.invalid .textarea{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,106,82,.1)}
   .hint{font-size:11px;color:var(--err);margin-top:5px;display:none}
   .field.invalid .hint{display:block}
 
   .row-2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-  @media(max-width:420px){.row-2{grid-template-columns:1fr}}
+  @media(max-width:420px){.row-2{grid-template-columns:1fr;gap:0}.row-2 .field{margin-bottom:13px}}
 
-  .drop{border:1.5px dashed var(--line-2);border-radius:13px;padding:18px 14px;text-align:center;cursor:pointer;
+  .drop{border:1.5px dashed var(--line-2);border-radius:11px;padding:14px 12px;text-align:center;cursor:pointer;
     transition:.35s;background:var(--bg-2);position:relative}
   .drop:hover,.drop.drag{border-color:var(--accent);background:var(--accent-wash)}
-  .drop .di{font-size:20px;color:var(--accent-deep);line-height:1}
-  .drop p{font-size:13px;color:var(--ink);margin-top:5px}
-  .drop small{font-size:11px;color:var(--faint);display:block;margin-top:3px;letter-spacing:.04em}
+  .drop .di{font-size:18px;color:var(--accent-deep);line-height:1}
+  .drop p{font-size:12.5px;color:var(--ink);margin-top:4px}
+  .drop small{font-size:10.5px;color:var(--faint);display:block;margin-top:2px;letter-spacing:.04em}
   .drop input[type=file]{display:none}
 
-  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px;gap:10px;flex-wrap:wrap;
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:10px;flex-wrap:wrap;
     font-size:11px;color:var(--faint);letter-spacing:.02em}
   .meta-row b{color:var(--ink);font-weight:600}
   .meta-row .over{color:var(--err)}
-  .bar{height:2px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:7px}
+  .bar{height:2px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px}
   .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .4s,background .3s}
   .bar i.over{background:var(--err)}
 
-  .previews{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}
+  .previews{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
   @media(max-width:380px){.previews{grid-template-columns:repeat(3,1fr)}}
-  .prev{position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:#e7e2d6;
+  .prev{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:#e7e2d6;
     animation:fadeIn .35s ease}
   @keyframes fadeIn{from{opacity:0;transform:scale(.87)}to{opacity:1;transform:none}}
   .prev img{width:100%;height:100%;object-fit:cover}
-  .prev .rm{position:absolute;top:4px;right:4px;width:19px;height:19px;border-radius:50%;border:none;cursor:pointer;
+  .prev .rm{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;border:none;cursor:pointer;
     background:rgba(51,48,42,.75);color:#fff;font-size:10px;display:grid;place-items:center;transition:.25s}
   .prev .rm:hover{background:var(--err)}
   .prev .sz{position:absolute;bottom:0;left:0;right:0;font-size:8px;text-align:center;padding:2px;
     background:linear-gradient(transparent,rgba(51,48,42,.82));color:#fff}
 
-  .send{width:100%;margin-top:16px;padding:13px;border:none;border-radius:13px;cursor:pointer;
-    font:inherit;font-size:14.5px;font-weight:600;color:#fffefb;letter-spacing:.04em;position:relative;overflow:hidden;
+  .send{width:100%;margin-top:14px;padding:13px;border:none;border-radius:12px;cursor:pointer;
+    font:inherit;font-size:14px;font-weight:600;color:#fffefb;letter-spacing:.04em;position:relative;overflow:hidden;
     background:var(--accent);transition:.35s}
   .send:hover:not(:disabled){background:var(--accent-deep);transform:translateY(-2px);box-shadow:0 14px 28px -14px rgba(138,100,66,.5)}
   .send:active:not(:disabled){transform:translateY(0)}
@@ -235,32 +234,31 @@
   @keyframes rot{to{transform:rotate(360deg)}}
   .send.loading .spinner{display:inline-block}
 
-  .sent{display:none;text-align:center;padding:32px 14px;animation:fadeIn .5s ease}
+  .sent{display:none;text-align:center;padding:24px 14px;animation:fadeIn .5s ease}
   .sent.show{display:block}
   .sent .ck{font-size:36px;color:var(--accent-deep);line-height:1}
-  .sent h3{font-size:18px;font-weight:600;margin-top:10px}
+  .sent h3{font-size:17px;font-weight:600;margin-top:10px}
   .sent p{font-size:12.5px;color:var(--soft);margin-top:6px}
   .sent button{margin-top:16px;background:transparent;border:1px solid var(--line-2);color:var(--ink);
-    padding:10px 20px;border-radius:11px;cursor:pointer;font:inherit;font-size:13px;transition:.3s}
+    padding:9px 18px;border-radius:10px;cursor:pointer;font:inherit;font-size:12.5px;transition:.3s}
   .sent button:hover{border-color:var(--accent);color:var(--accent-deep)}
+
+  /* footer */
+  .foot{padding:16px 28px 22px;text-align:center;border-top:1px solid var(--line);background:var(--bg-2)}
+  .foot .sig{font-size:10px;color:var(--faint);letter-spacing:.2em}
 
   /* toasts */
   .toasts{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:120;display:flex;flex-direction:column;gap:10px;
     width:min(380px,calc(100% - 28px));padding-bottom:env(safe-area-inset-bottom)}
-  .toast{display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:13px;
+  .toast{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:12px;
     background:var(--card);border:1px solid var(--line-2);box-shadow:0 24px 50px -22px rgba(80,62,42,.5);
     transform:translateY(150%);opacity:0;transition:.5s cubic-bezier(.2,.8,.2,1)}
   .toast.show{transform:none;opacity:1}
-  .toast .tic{width:28px;height:28px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:14px}
+  .toast .tic{width:26px;height:26px;flex:none;border-radius:7px;display:grid;place-items:center;font-size:13px}
   .toast.ok .tic{background:var(--accent-wash);color:var(--accent-deep)}
   .toast.err .tic{background:rgba(192,106,82,.14);color:var(--err)}
-  .toast .tx strong{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
-  .toast .tx span{font-size:11.5px;color:var(--soft)}
-
-  /* footer — only shows on mobile (desktop right col scrolls past it) */
-  footer{margin-top:36px;text-align:center;padding-bottom:env(safe-area-inset-bottom)}
-  footer .d{width:22px;height:1px;background:var(--line-2);margin:0 auto 12px}
-  footer .sig{font-size:10.5px;color:var(--faint);letter-spacing:.18em}
+  .toast .tx strong{display:block;font-size:13px;font-weight:600;color:var(--ink)}
+  .toast .tx span{font-size:11px;color:var(--soft)}
 </style>
 </head>
 <body>
@@ -268,139 +266,124 @@
 <div class="amb"></div>
 <div class="grain"></div>
 
-<main class="wrap">
+<main class="card">
 
-  <!-- ===== LEFT: PROFILE ===== -->
-  <div class="col-profile">
-
-    <header class="hero rv">
-      <div class="avatar-wrap">
-        <img class="avatar" alt="Hai Dang" src="avatar.png"
-          onerror="this.onerror=null;this.src=&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='236' height='236'%3E%3Crect width='236' height='236' fill='%23e7e2d6'/%3E%3Ccircle cx='118' cy='96' r='40' fill='%23a9805a'/%3E%3Cpath d='M44 216c0-40 33-62 74-62s74 22 74 62z' fill='%23a9805a'/%3E%3C/svg%3E&quot;" />
-      </div>
-      <h1 class="name">Hai Dang</h1>
-    </header>
-
-    <section class="quote rv">
-      <p>"Ba ngàn con sông chỉ uống một gáo nước<br>Thiên hạ vạn người chỉ muốn nắm tay em."</p>
-    </section>
-
-    <section class="social rv">
-      <!-- Facebook -->
-      <a class="sb" href="https://facebook.com/danghaipham" target="_blank" rel="noopener">
-        <span class="ic">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
-          </svg>
-        </span>
-        <span class="l"><b>Facebook</b><span>/danghaipham</span></span>
-        <span class="arr">→</span>
-      </a>
-
-      <!-- Instagram -->
-      <a class="sb" href="https://instagram.com/_danghaiI_" target="_blank" rel="noopener">
-        <span class="ic">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-          </svg>
-        </span>
-        <span class="l"><b>Instagram</b><span>@_danghaiI_</span></span>
-        <span class="arr">→</span>
-      </a>
-
-      <!-- Music player -->
-      <div class="player" id="player">
-        <button class="pbtn" id="pbtn" aria-label="play">
-          <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <svg class="ic-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-        </button>
-        <div class="pinfo">
-          <div class="pl"><span class="bars"><span></span><span></span><span></span><span></span></span> đang nghe</div>
-          <div class="pt" id="ptitle">— chạm để phát —</div>
-          <div class="pprog" id="pprog"><i id="pfill"></i></div>
-        </div>
-        <audio id="audio" preload="none"></audio>
-      </div>
-    </section>
-
-  </div><!-- /col-profile -->
-
-  <!-- ===== RIGHT: FORM ===== -->
-  <div class="col-form">
-    <div class="col-form-inner">
-
-      <section class="form-sec rv">
-        <div class="form-title">nhắn mình</div>
-        <div class="form-card">
-          <div id="formInner">
-            <div class="row-2">
-              <div class="field">
-                <label>Tên <span class="opt">(tuỳ chọn)</span></label>
-                <input class="input" id="name" type="text" placeholder="bạn là ai nhỉ…" autocomplete="name" />
-              </div>
-              <div class="field">
-                <label>Email <span class="opt">(tuỳ chọn)</span></label>
-                <input class="input" id="email" type="email" placeholder="để mình rep lại" autocomplete="email" />
-              </div>
-            </div>
-
-            <div class="field" id="msgField">
-              <label>Lời nhắn <span class="req">*</span></label>
-              <textarea class="textarea" id="message" placeholder="viết gì đó đi…"></textarea>
-              <div class="hint">cần viết lời nhắn trước khi gửi</div>
-            </div>
-
-            <div class="field" style="margin-bottom:6px">
-              <label>Ảnh đính kèm <span class="opt">(tuỳ chọn)</span></label>
-              <div class="drop" id="drop">
-                <div class="di">+</div>
-                <p>Kéo thả hoặc chạm để chọn ảnh</p>
-                <small>TỐI ĐA 25 MB</small>
-                <input type="file" id="fileInput" accept="image/*" multiple />
-              </div>
-              <div class="meta-row">
-                <span><b id="count">0</b> ảnh</span>
-                <span id="sizePill"><b id="size">0 B</b> / 25 MB</span>
-              </div>
-              <div class="bar"><i id="barFill"></i></div>
-              <div class="previews" id="previews"></div>
-            </div>
-
-            <button class="send" id="sendBtn">
-              <span class="lbl"><span class="spinner"></span><span class="txt-send">Gửi lời nhắn</span></span>
-            </button>
-          </div>
-
-          <div class="sent" id="sentState">
-            <div class="ck">✓</div>
-            <h3>Đã gửi rồi nha</h3>
-            <p>cảm ơn đã ghé qua — mình sẽ rep sớm</p>
-            <button id="resetBtn">Gửi tin khác</button>
-          </div>
-        </div>
-      </section>
-
-      <footer class="rv">
-        <div class="d"></div>
-        <div class="sig">© 2026 · HAI DANG</div>
-      </footer>
-
+  <!-- LEFT (desktop) / TOP (mobile): HERO -->
+  <header class="hero">
+    <div class="avatar-wrap">
+      <img class="avatar" alt="Hai Dang" src="avatar.png"/>
     </div>
-  </div><!-- /col-form -->
+    <h1 class="name">Hai Dang</h1>
+
+    <div class="quote">
+      <p>Hoa nở hữu kỳ<br/>Người gặp hữu duyên</p>
+    </div>
+
+    <div class="social-row">
+      <a class="sb" href="https://facebook.com/danghaipham" target="_blank" rel="noopener" data-label="Facebook" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+        </svg>
+      </a>
+      <a class="sb" href="https://instagram.com/_danghaiI_" target="_blank" rel="noopener" data-label="Instagram" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+        </svg>
+      </a>
+      <a class="sb" href="https://github.com/DANG-PH" target="_blank" rel="noopener" data-label="GitHub" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+        </svg>
+      </a>
+      <a class="sb" href="https://www.linkedin.com/in/danghaipham/" target="_blank" rel="noopener" data-label="LinkedIn" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="player" id="player">
+      <button class="pbtn" id="pbtn" aria-label="play">
+        <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+      <div class="pinfo">
+        <div class="pl"><span class="bars"><span></span><span></span><span></span><span></span></span> đang nghe</div>
+        <div class="pt" id="ptitle">— chạm để phát —</div>
+        <div class="pprog" id="pprog"><i id="pfill"></i></div>
+      </div>
+      <audio id="audio" preload="none"></audio>
+    </div>
+
+  </header>
+
+  <!-- RIGHT (desktop) / BOTTOM (mobile): FORM -->
+  <div class="body">
+
+    <!-- Desktop heading -->
+    <div class="form-heading">nhắn mình</div>
+
+    <!-- Mobile divider -->
+    <div class="div"><span>nhắn mình</span></div>
+
+    <div id="formInner">
+      <div class="row-2">
+        <div class="field">
+          <label>Tên <span class="opt">(tuỳ chọn)</span></label>
+          <input class="input" id="name" type="text" placeholder="bạn là ai nhỉ…" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label>Email <span class="opt">(tuỳ chọn)</span></label>
+          <input class="input" id="email" type="email" placeholder="để mình rep lại" autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="field" id="msgField">
+        <label>Lời nhắn <span class="req">*</span></label>
+        <textarea class="textarea" id="message" placeholder="viết gì đó đi…"></textarea>
+        <div class="hint">cần viết lời nhắn trước khi gửi</div>
+      </div>
+
+      <div class="field" style="margin-bottom:6px">
+        <label>Ảnh đính kèm <span class="opt">(tuỳ chọn)</span></label>
+        <div class="drop" id="drop">
+          <div class="di">+</div>
+          <p>Kéo thả hoặc chạm để chọn ảnh</p>
+          <small>TỐI ĐA 25 MB</small>
+          <input type="file" id="fileInput" accept="image/*" multiple />
+        </div>
+        <div class="meta-row">
+          <span><b id="count">0</b> ảnh</span>
+          <span id="sizePill"><b id="size">0 B</b> / 25 MB</span>
+        </div>
+        <div class="bar"><i id="barFill"></i></div>
+        <div class="previews" id="previews"></div>
+      </div>
+
+      <button class="send" id="sendBtn">
+        <span class="lbl"><span class="spinner"></span><span class="txt-send">Gửi lời nhắn</span></span>
+      </button>
+    </div>
+
+    <div class="sent" id="sentState">
+      <div class="ck">✓</div>
+      <h3>Đã gửi rồi nha</h3>
+      <p>cảm ơn đã ghé qua — mình sẽ rep sớm</p>
+      <button id="resetBtn">Gửi tin khác</button>
+    </div>
+
+  </div>
+
+  <!-- Footer (full width bottom) -->
+  <div class="foot">
+    <div class="sig">© 2026 · HAI DANG</div>
+  </div>
 
 </main>
 
 <div class="toasts" id="toasts"></div>
 
 <script>
-/* reveal */
-(function(){
-  const io=new IntersectionObserver(es=>es.forEach(en=>{
-    if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}
-  }),{threshold:.06});
-  document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i*.1)+'s';io.observe(el);});
-})();
-
 /* ===== MUSIC PLAYER ===== */
 const CANDIDATES=['50 năm về sau.mp3','music.mp3','audio.mp3','bgm.mp3','track.mp3'];
 const audio=document.getElementById('audio'),player=document.getElementById('player');
@@ -482,7 +465,7 @@ sendBtn.addEventListener('click',async()=>{
     formData.append('senderEmail',email);
     formData.append('message',message);
     files.forEach(f=>formData.append('images',f.file));
-    const res=await fetch('http://localhost:8888/sendEmail',{method:'POST',body:formData});
+    const res=await fetch('https://profile-api.dangpham.id.vn/profile/sendEmail',{method:'POST',body:formData});
     if(!res.ok)throw new Error('HTTP '+res.status);
     toast('ok','Gửi thành công','Cảm ơn đã ghé qua.');
     document.getElementById('formInner').style.display='none';
